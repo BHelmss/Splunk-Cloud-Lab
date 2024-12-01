@@ -36,6 +36,7 @@ In this project, I will be taking advantage of of Splunk’s Cloud Platform free
   - 2.1 I first downloaded the tutorial.zip that I will use for this lab.
     
   - 2.2 Then I clicked on the settings tab and selected add data. Here I selected the tutorial.zip and set the following settings.
+    
     ![image](https://github.com/user-attachments/assets/a4340620-699d-4703-a067-dfb91698b227)
 
   - 2.3 Once Splunk has ingested the data it gave me this confirmation.
