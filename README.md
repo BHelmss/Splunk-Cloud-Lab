@@ -1,91 +1,79 @@
-# Chronicle Phishing Lab
+# Splunk Cloud Lab
 
 ## Objective
 
-In this lab, I will use Chronicle to invesitgate a security incident involving a phishing scenario. I am a security analyst at a financial services company. I receive an alert that an employee received a phishing email in their inbox. I review the alert and identify a suspicious domain name contained in the email's body: signin.office365x24.com. I need to determine whether any other employees have received phishing emails containing this domain and whether they have visited the domain. I will use Chronicle to investigate this domain
-
-Lab from Google Certification.
+In this project, I will be taking advantage of of Splunk’s Cloud Platform free trial. I will create an account, ingest a new data set, analyze the data utilizing queries and search filters, and undergoing a short security practice scenario.
 
 ### Skills Learned
 
-- Accessing threat intelligence reports on domains
-- Identifying assets that accessed malicious domains
-- Evaluating HTTP Requests
-- Identifying additional domains within an attack infrastructure
-  
+- Uploading Log Data for Ingestion
+- Searching through indexed data with queries
+- Utilizing filters within the Splunk search
+- Simulating a security incident (SSH failed login)
+
 ### Tools Used
 
-- Chronicle SIEM
+- Splunk for log ingestion and analysis
 
 ## Steps
-1 Load Up Chronicle
-   
-  - 1.1 The data was already ingested into Chronicle since this project is through Google. Below I analyzed the different aspects of the homepage.
+1 Set up Splunk Cloud Free Trial and login
+
+  - 1.1 After validating my email address and creating an account, I recieved this email.
+    ![image](https://github.com/user-attachments/assets/464312fa-78c6-475e-8e58-d5b95c883233)
+
+
+  - 1.2 The URL brought me to the login page which I could use the temporary credentials to login. After using these credentials, I was prompted to create a new password for the            free trial account.
+
+    ![image](https://github.com/user-attachments/assets/c47f1476-a910-4cb8-b8b0-e731ce300351)
+
+
+  - 1.3 I was then automatically directed to the Splunk dashboard.
+    ![image](https://github.com/user-attachments/assets/e772f0f2-1326-4377-9792-7447454a6f44)
+
+
+2 Add data to splunk
+
+  - 2.1 I first downloaded the tutorial.zip that I will use for this lab.
+
+  - 2.2 Then I clicked on the settings tab and selected add data. Here I selected the tutorial.zip and set the following settings.
     
-    ![image](https://github.com/user-attachments/assets/ffe09ad9-61c8-4d77-9fde-1a6f2a8d1f69)
+    ![image](https://github.com/user-attachments/assets/a4340620-699d-4703-a067-dfb91698b227)
 
-
-2 Perform the domain search
-   
-  - 2.1 Now I will search for the domain that was included in the domain of the phishing email to see of other instances involving the domain in the network. The domain exists as           seen below.
-
-    ![image](https://github.com/user-attachments/assets/77896dd4-f9d7-47ed-8380-97700fa569ee)
-
-
-  - 2.2 After clicking the above domain link, I am brought to the domain view of Chronicle. I can view all of the following fields from this view:
+  - 2.3 Once Splunk has ingested the data it gave me this confirmation.
     
-    ![image](https://github.com/user-attachments/assets/f8f7bb7b-4e98-4158-b898-51abe8324e97)
+    ![image](https://github.com/user-attachments/assets/85994e49-a114-4a44-92e8-fb0963c428e1)
 
 
-      -VT CONTEXT: This section provides the VirusTotal information available for the domain.
+3 Performing a basic search
+
+  - 3.1 Now that the data has been ingested I can go back to the main dashboard and select search and reporting. Here I will conduct the first search query of index=”main”.
+      Meaning: This query is specifying which index of data to search within. Here, it is searching the main index which is the default index used by splunk when data is ingested.
+
+    ![image](https://github.com/user-attachments/assets/70842b3d-2d34-42d5-9760-f4d01fcc5023)
+
+
+4 Evaluate the fields
+
+  - 4.1 Splunk attaches fields to each event when data is indexed. These fields are all searchable to make finding specific information easier. I will first search by host. There 
+      are 5 hosts included in the data I will first filter for the mail server host. I selected the host filter in the bottom left and selected the mailsv filter. It automatically        added the filter to the query line.
+
+      ![image](https://github.com/user-attachments/assets/5148803a-1e40-4fee-9c5b-5759461d28e9)
+
+
+  - 4.2 I can also filter by the source, which are the name of the files in which the event origiantes. Here I am filtering for the mail server security log.
     
-      -WHOIS: This section provides a summary of information about the domain using WHOIS, a free and publicly available directory that includes information about registered domain       names, such as the name and contact information of the domain owner. In cybersecurity, this information is helpful in assessing a domain's reputation and determining the            origin of malicious websites.
+      ![image](https://github.com/user-attachments/assets/0887aab6-7b3f-4867-8364-baa9cbe1cecd)
+
+
+
+5 Security scenario
+
+  - 5.1 Let’s say that I was tasked with exploring any failed SSH logins for the root account on the mail server. I would first need to narrow the search specifically to the mail           server host and then searches for the keyword fail with the wildcard ‘*’. This will essentially search the main index for any events involving the mail server host. It
+        then searches for any occurrence of fail (the wildcard will also search include words like failed and failure). Finally, the root keyword will search for any events that            follow all of the previous criteria and involves the root user.
+
+      ![image](https://github.com/user-attachments/assets/c5348dc7-2fc7-485b-b9cd-77e4d8adc56a)
+
+
+  - 5.2 As seen above there are over 300 events that match this criteria (all-time). Below I highlight a few of the entries. Here we can see the entire log entry which involves             things like timestamp, hostname, source IP, action, and ports. This many failed attempts in a short time from multiple Ip addresses is definitely a red flag and could be a          sign of a potential incident.
     
-      -Prevalence: This section provides a graph which outlines the historical prevalence of the domain. This can be helpful when you need to determine whether the domain has been        accessed previously. Usually, less prevalent domains may indicate a greater threat.
-     
-      -RESOLVED IPS: This insight card provides additional context about the domain, such as the IP address that maps to signin.office365x24.com, which is 40.100.174.34. Clicking          on this IP will run a new search for the IP address in Chronicle. Insight cards can be helpful in expanding the domain investigation and further investigating an indicator          to determine whether there is a broader compromise.
-    
-       -SIBLING DOMAINS: This insight card provides additional context about the domain. Sibling domains share a common top or parent domain. For example, here the sibling
-       domain is listed as login.office365x24.com, which shares the same top domain office365x24.com with the domain you're investigating: signin.office365x24.com.
-    
-       -Click TIMELINE. This tab provides information about the events and interactions made with this domain. Click EXPAND ALL to reveal the details about the HTTP requests made          including GET and POST requests.  A GET request retrieves data from a server while a POST request submits data to a server.
-    
-       -Click ASSETS. This tab provides a list of the assets that have accessed the domain. 
-    
-
-3 Determine whether the domain is malicious
-   
-  - 3.1 Check the VT context and see that many security vendors have flagged this domain as a security threat.
-
-    ![image](https://github.com/user-attachments/assets/f0b36d10-3941-4bf8-a571-627a18dba36b)
-
-
-
-4 Investigate the affected assets and events
-   
-  - 4.1 In the hosts tab I can see which hosts accessed this domain. This would give me a lot of information on what assets could be damaged or compromised.
-    
-      ![image](https://github.com/user-attachments/assets/83d7829a-bd6b-420a-99b0-926db35c7177)
-
-
-  - 4.2 The timeline displays a time based sequence of events involving this domain. If I select an event it will give me more information such as the type of http request such as    GET or POST. POST is particularly important because it means data was sent to the domain (could hint at a successful phishing attempt).
-    
-    ![image](https://github.com/user-attachments/assets/db9d63e1-d2d7-460c-bc95-f0ce691bacb6)
-
-
-5 Investigate the resolved IP addresses
-   
-  - 5.1 We can see that this domain is most likely malicious, so it is important to see if this domain uses any other domains in its attack infrastructure. I can see below that two   IPs resolved to the domain name.
-
-      ![image](https://github.com/user-attachments/assets/780bd5ee-6175-4ff7-bfc8-e14bf0795409)
-
-
-  - 5.2 First I will view the 40.100.174.34 IP. In the domain section, I can see this IP also resolves to the signin.accounts-gooqle.com domain. This fake login domain has a typo     which could have been a give away for the assets affected by the phishing attack. I can also see the affected assets and timeline as seen below.
-    
-      ![image](https://github.com/user-attachments/assets/04ceeb58-f041-4f7f-b32d-9d8a68e4f419)
-      ![image](https://github.com/user-attachments/assets/6628204c-d9c8-4286-ad77-d6bb08b6f3e9)
-      ![image](https://github.com/user-attachments/assets/aa344707-5a89-4fbc-aa5e-697efd879173)
-
-
-
-
+      ![image](https://github.com/user-attachments/assets/d1e43da3-c8cd-4ea6-8cff-ec05771e01f8)
